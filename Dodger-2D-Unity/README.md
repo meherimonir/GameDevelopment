@@ -1,1 +1,111 @@
+Dodger – 2D Unity Game
 
+A simple 2D dodge game where the player controls a square to avoid falling obstacles. The score now increases by 1 for every obstacle successfully avoided, instead of counting seconds.
+
+Game Overview
+Player: Blue square that moves left and right
+Obstacles: Red squares that fall from the top
+Objective: Survive as long as possible by dodging obstacles
+Score: Increases by 1 each time you avoid an obstacle
+
+Controls:
+Arrow Keys (Left/Right) to move
+R to restart after Game Over
+
+Unity Project Setup
+Unity Version
+Unity 2022.3 LTS (or compatible version)
+2D (Core) Template
+
+Project Structure
+Scene Hierarchy:
+Main Camera (default)
+EventSystem (auto-generated with UI)
+Canvas
+ScoreText (TextMeshPro UI element)
+Player
+Obstacle (converted to Prefab)
+ObstacleSpawner
+GameManager
+
+GameObject Details
+Player
+Components:
+Transform (Position: X=0, Y=-4, Z=0)
+Sprite Renderer (Color: Blue, Sprite: Square)
+Box Collider 2D
+Rigidbody 2D (Body Type: Kinematic, Gravity Scale: 0)
+PlayerMovement Script
+Tag: Player
+
+Obstacle (Prefab)
+Components:
+Transform (Scale: X=0.5, Y=0.5, Z=1)
+Sprite Renderer (Color: Red, Sprite: Square)
+Box Collider 2D
+Rigidbody 2D (Gravity Scale: 1)
+Obstacle Script
+Tag: Obstacle
+
+ObstacleSpawner
+Components:
+Transform (Position: X=0, Y=5, Z=0)
+ObstacleSpawner Script
+Inspector Settings:
+Obstacle Prefab: Linked to Obstacle prefab
+Spawn Interval: 2
+
+GameManager
+Components:
+Transform (default position)
+GameManager Script
+Inspector Settings:
+Score Text: Linked to ScoreText UI element
+
+ScoreText (UI)
+Components:
+Rect Transform (Anchored to top-left, Pos X=100, Y=-50)
+TextMeshPro - Text (UI)
+Text Settings:
+Text: "Score: 0"
+Font Size: 36
+Color: White
+
+Tags Used
+Player – Applied to player object for obstacle tracking
+Obstacle – Applied to obstacle prefab for collision detection
+
+Project Folder Structure
+Assets/
+├── Prefabs/
+│   └── Obstacle.prefab
+├── Scripts/
+│   ├── PlayerMovement.cs
+│   ├── ObstacleSpawner.cs
+│   ├── Obstacle.cs
+│   └── GameManager.cs
+└── Scenes/
+    └── SampleScene.unity (or Main.unity)
+    
+Scripts Overview
+PlayerMovement.cs
+Handles player movement (left/right with arrow keys)
+Detects collision with obstacles
+Triggers game over and pauses game
+Handles restart functionality (R key)
+
+ObstacleSpawner.cs
+Spawns obstacles at random X positions
+Uses timer to spawn every 2 seconds
+Instantiates obstacles from prefab
+
+Obstacle.cs
+Tracks each obstacle in the scene
+Detects when obstacle passes below the player
+Increments score by 1 in GameManager when avoided
+Ensures each obstacle only counts once
+
+GameManager.cs
+Tracks and displays score
+Updates score UI when score changes
+Stops score updates when game over
