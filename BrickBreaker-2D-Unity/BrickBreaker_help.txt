@@ -1,0 +1,275 @@
+Brick Breaker - 2D Unity Game
+A classic 2D brick breaker game where the player controls a paddle to bounce a ball and destroy bricks.
+Game Overview
+
+Paddle: Green horizontal bar controlled by the player
+Ball: White circle that bounces around the screen
+Bricks: Orange rectangles arranged in a grid at the top
+Objective: Destroy all bricks without losing all lives
+Controls:
+
+Arrow Keys (Left/Right) to move paddle
+R to restart after game over or win
+
+
+Scoring: Each brick destroyed = 10 points
+Lives: Start with 3 lives, lose one when ball falls off screen
+
+Unity Project Setup
+Unity Version
+
+Unity 2022.3 LTS (or compatible version)
+2D (Core) Template
+
+Project Structure
+Scene Hierarchy
+- Main Camera (default)
+- EventSystem (auto-generated with UI)
+- Canvas
+  ├── ScoreText (TextMeshPro UI element)
+  └── LivesText (TextMeshPro UI element)
+- Paddle
+- Ball
+- TopWall
+- LeftWall
+- RightWall
+- DeathZone
+- Brick (converted to Prefab, deleted from scene)
+- BrickManager
+- GameManager
+GameObject Details
+Paddle
+
+Components:
+
+Transform (Position: X=0, Y=-4, Z=0 | Scale: X=2, Y=0.3, Z=1)
+Sprite Renderer (Color: Green, Sprite: Square)
+Box Collider 2D (Material: BouncyMaterial)
+Rigidbody 2D (Body Type: Kinematic, Gravity Scale: 0)
+PaddleMovement Script
+
+
+Purpose: Player-controlled horizontal paddle
+
+Ball
+
+Components:
+
+Transform (Position: X=0, Y=0, Z=0 | Scale: X=0.3, Y=0.3, Z=1)
+Sprite Renderer (Color: White, Sprite: Circle)
+Circle Collider 2D (Material: BouncyMaterial)
+Rigidbody 2D (Body Type: Dynamic, Gravity Scale: 0, Linear Drag: 0, Angular Drag: 0)
+BallMovement Script
+
+
+Tag: Ball
+Purpose: Bouncing ball that destroys bricks
+
+TopWall
+
+Components:
+
+Transform (Position: X=0, Y=5.5, Z=0 | Scale: X=12, Y=0.5, Z=1)
+Sprite Renderer (Color: Any)
+Box Collider 2D
+
+
+Purpose: Top boundary - ball bounces off
+
+LeftWall
+
+Components:
+
+Transform (Position: X=-9, Y=0, Z=0 | Scale: X=0.5, Y=12, Z=1)
+Sprite Renderer (Color: Any)
+Box Collider 2D
+
+
+Purpose: Left boundary - ball bounces off
+
+RightWall
+
+Components:
+
+Transform (Position: X=9, Y=0, Z=0 | Scale: X=0.5, Y=12, Z=1)
+Sprite Renderer (Color: Any)
+Box Collider 2D
+
+
+Purpose: Right boundary - ball bounces off
+
+DeathZone
+
+Components:
+
+Transform (Position: X=0, Y=-6, Z=0 | Scale: X=12, Y=0.5, Z=1)
+Sprite Renderer (Color: Red)
+Box Collider 2D (Is Trigger: ✓ checked)
+DeathZone Script
+
+
+Purpose: Detects when ball falls off screen - triggers life loss
+
+Brick (Prefab)
+
+Components:
+
+Transform (Scale: X=1, Y=0.4, Z=1)
+Sprite Renderer (Color: Orange, Sprite: Square)
+Box Collider 2D
+Brick Script
+
+
+Tag: Brick
+Purpose: Destructible bricks that give points when destroyed
+
+BrickManager
+
+Components:
+
+Transform (default position)
+BrickManager Script
+
+
+Inspector Settings:
+
+Brick Prefab: Linked to Brick prefab
+Rows: 5
+Columns: 8
+Brick Spacing X: 1.2
+Brick Spacing Y: 0.6
+Start Position: (-4.8, 3)
+
+
+Purpose: Spawns grid of bricks at game start
+
+GameManager
+
+Components:
+
+Transform (default position)
+GameManager Script
+
+
+Inspector Settings:
+
+Score Text: Linked to ScoreText UI element
+Lives Text: Linked to LivesText UI element
+
+
+Purpose: Manages score, lives, win/lose conditions
+
+ScoreText (UI)
+
+Components:
+
+Rect Transform (Anchored to top-left, Pos X=100, Y=-30)
+TextMeshPro - Text (UI)
+
+
+Text Settings:
+
+Text: "Score: 0"
+Font Size: 32
+Color: White
+
+
+Purpose: Displays current score
+
+LivesText (UI)
+
+Components:
+
+Rect Transform (Anchored to top-right, Pos X=-100, Y=-30)
+TextMeshPro - Text (UI)
+
+
+Text Settings:
+
+Text: "Lives: 3"
+Font Size: 32
+Color: White
+
+
+Purpose: Displays remaining lives
+
+Tags Used
+
+Ball - Applied to ball for collision detection
+Brick - Applied to brick prefab for win condition checking
+
+Physics Materials
+BouncyMaterial (Physics Material 2D)
+
+Location: Assets/Materials/
+Settings:
+
+Friction: 0
+Bounciness: 1
+
+
+Applied To: Ball (Circle Collider 2D), Paddle (Box Collider 2D)
+Purpose: Perfect bouncing with no energy loss
+
+Project Folder Structure
+Assets/
+├── Materials/
+│   └── BouncyMaterial.physicsMaterial2D
+├── Prefabs/
+│   └── Brick.prefab
+├── Scripts/
+│   ├── PaddleMovement.cs
+│   ├── BallMovement.cs
+│   ├── Brick.cs
+│   ├── BrickManager.cs
+│   ├── DeathZone.cs
+│   └── GameManager.cs
+└── Scenes/
+    └── SampleScene.unity (or Main.unity)
+Scripts Overview
+PaddleMovement.cs
+
+Controls paddle movement (left/right with arrow keys)
+Horizontal input handling
+
+BallMovement.cs
+
+Launches ball at game start in random diagonal direction
+Handles ball reset after falling
+Uses Invoke to delay relaunch by 1 second
+
+Brick.cs
+
+Detects collision with ball
+Awards points to GameManager
+Destroys brick when hit
+
+BrickManager.cs
+
+Spawns grid of bricks at game start
+Uses nested for loops to create rows and columns
+Calculates brick positions with spacing
+
+DeathZone.cs
+
+Trigger zone below paddle
+Detects when ball falls off screen
+Triggers life loss and ball reset
+
+GameManager.cs
+
+Singleton pattern for global access
+Tracks score and lives
+Updates UI displays
+Checks win condition (all bricks destroyed)
+Checks lose condition (lives = 0)
+Handles game restart (R key)
+
+How to Run
+
+Open the project in Unity Hub
+Load the main scene (SampleScene or Main)
+Press Play button in Unity Editor
+Use Arrow Keys to move paddle
+Destroy all bricks to win
+Press R to restart after game over or win
