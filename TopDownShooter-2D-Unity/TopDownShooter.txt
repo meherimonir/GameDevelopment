@@ -1,0 +1,324 @@
+Top-Down Shooter - 2D Unity Game
+A simple 2D top-down shooter where the player moves in all directions, shoots bullets at enemies, and survives as long as possible.
+Game Overview
+
+Player: Blue circle controlled with WASD
+Enemies: Red squares that chase the player
+Bullets: Yellow circles that shoot toward mouse cursor
+Objective: Survive and destroy as many enemies as possible
+Controls:
+
+WASD to move in 8 directions
+Left Mouse Button to shoot toward cursor
+R to restart after game over
+
+
+Scoring: Each enemy destroyed = 10 points
+Health: Player starts with 5 health, enemies deal 1 damage on contact
+
+Unity Project Setup
+Unity Version
+
+Unity 2022.3 LTS (or compatible version)
+2D (Core) Template
+
+Required Packages
+
+Input System (installed via Package Manager)
+
+Window → Package Manager → Unity Registry → "Input System" → Install
+Requires Unity restart when prompted
+
+
+
+Project Structure
+Scene Hierarchy
+- Main Camera (default)
+- EventSystem (auto-generated with UI)
+- Canvas
+  ├── ScoreText (TextMeshPro UI element)
+  ├── HealthText (TextMeshPro UI element)
+  └── GameOverText (TextMeshPro UI element, starts inactive)
+- Player
+  └── FirePoint (empty GameObject, child of Player)
+- Bullet (converted to Prefab, deleted from scene)
+- Enemy (converted to Prefab, deleted from scene)
+- EnemySpawner
+- GameManager
+GameObject Details
+Player
+
+Components:
+
+Transform (Position: X=0, Y=0, Z=0 | Scale: X=0.5, Y=0.5, Z=1)
+Sprite Renderer (Color: Blue, Sprite: Circle)
+Rigidbody 2D (Body Type: Dynamic, Gravity Scale: 0, Linear Drag: 5, Freeze Rotation Z: ✓)
+Circle Collider 2D
+PlayerController Script
+
+
+Tag: Player
+Inspector Settings (PlayerController Script):
+
+Move Speed: 5
+Bullet Prefab: Linked to Bullet prefab
+Fire Point: Linked to FirePoint child object
+Shoot Cooldown: 0.5
+Max Health: 5
+
+
+Purpose: Player-controlled character that moves and shoots
+
+FirePoint (Child of Player)
+
+Components:
+
+Transform (Position: X=0, Y=0.3, Z=0)
+
+
+Purpose: Spawn point for bullets (slightly above player center)
+
+Bullet (Prefab)
+
+Components:
+
+Transform (Scale: X=0.2, Y=0.2, Z=1)
+Sprite Renderer (Color: Yellow, Sprite: Circle)
+Rigidbody 2D (Body Type: Dynamic, Gravity Scale: 0, Freeze Rotation Z: ✓)
+Circle Collider 2D (Is Trigger: ✓)
+Bullet Script
+
+
+Inspector Settings (Bullet Script):
+
+Bullet Speed: 10
+Bullet Lifetime: 3
+
+
+Purpose: Projectile that damages enemies
+
+Enemy (Prefab)
+
+Components:
+
+Transform (Scale: X=0.4, Y=0.4, Z=1)
+Sprite Renderer (Color: Red, Sprite: Square)
+Rigidbody 2D (Body Type: Dynamic, Gravity Scale: 0, Linear Drag: 2, Freeze Rotation Z: ✓)
+Box Collider 2D
+Enemy Script
+
+
+Tag: Enemy
+Inspector Settings (Enemy Script):
+
+Move Speed: 2
+Max Health: 3
+Damage To Player: 1
+Score Value: 10
+
+
+Purpose: Enemy that chases player and deals damage on contact
+
+EnemySpawner
+
+Components:
+
+Transform (default position)
+EnemySpawner Script
+
+
+Inspector Settings:
+
+Enemy Prefab: Linked to Enemy prefab
+Spawn Interval: 3
+Spawn Radius: 8
+
+
+Purpose: Spawns enemies in a circle around the center every 3 seconds
+
+GameManager
+
+Components:
+
+Transform (default position)
+GameManager Script
+
+
+Inspector Settings:
+
+Score Text: Linked to ScoreText UI element
+Health Text: Linked to HealthText UI element
+Game Over Text: Linked to GameOverText UI element
+
+
+Purpose: Manages score, UI updates, and game over state
+
+ScoreText (UI)
+
+Components:
+
+Rect Transform (Anchored to top-left, Pos X=100, Y=-30)
+TextMeshPro - Text (UI)
+
+
+Text Settings:
+
+Text: "Score: 0"
+Font Size: 28
+Color: White
+
+
+Purpose: Displays current score
+
+HealthText (UI)
+
+Components:
+
+Rect Transform (Anchored to top-right, Pos X=-100, Y=-30)
+TextMeshPro - Text (UI)
+
+
+Text Settings:
+
+Text: "Health: 5"
+Font Size: 28
+Color: White
+
+
+Purpose: Displays remaining player health
+
+GameOverText (UI)
+
+Components:
+
+Rect Transform (Anchored to center-middle, Pos X=0, Y=0 | Width=400, Height=200)
+TextMeshPro - Text (UI)
+
+
+Text Settings:
+
+Text: "GAME OVER"
+Font Size: 36
+Color: Red
+Alignment: Center (horizontal and vertical)
+
+
+GameObject State: Starts inactive (unchecked in Hierarchy)
+Purpose: Displays game over message and final score
+
+Tags Used
+
+Player - Applied to player for enemy AI targeting
+Enemy - Applied to enemy prefab for bullet collision detection
+
+Input System Setup
+PlayerControls (Input Actions Asset)
+
+Location: Assets/Input/
+Action Map: Player
+Actions:
+
+Move
+
+Action Type: Value
+Control Type: Vector 2
+Binding: 2D Vector Composite (WASD keys)
+
+Up: W [Keyboard]
+Down: S [Keyboard]
+Left: A [Keyboard]
+Right: D [Keyboard]
+
+
+
+
+Shoot
+
+Action Type: Button
+Binding: Left Button [Mouse]
+
+
+Restart (Optional - if using Option 2)
+
+Action Type: Button
+Binding: R [Keyboard]
+
+
+
+
+Settings:
+
+Generate C# Class: ✓ (checked and applied)
+
+
+
+Project Folder Structure
+Assets/
+├── Input/
+│   ├── PlayerControls.inputactions
+│   └── PlayerControls.cs (auto-generated)
+├── Prefabs/
+│   ├── Bullet.prefab
+│   └── Enemy.prefab
+├── Scripts/
+│   ├── PlayerController.cs
+│   ├── Bullet.cs
+│   ├── Enemy.cs
+│   ├── EnemySpawner.cs
+│   └── GameManager.cs
+└── Scenes/
+    └── SampleScene.unity (or Main.unity)
+Scripts Overview
+PlayerController.cs
+
+Uses New Input System with event-driven input (OnEnable/OnDisable pattern)
+Handles 8-directional movement (WASD with Rigidbody2D velocity)
+Implements shooting toward mouse cursor with cooldown
+Converts screen position to world position for aiming
+Manages player health and takes damage from enemies
+Calls GameOver when health reaches zero
+Detects collision with enemies (OnCollisionEnter2D)
+
+Bullet.cs
+
+Sets bullet direction and velocity when spawned
+Auto-destroys after lifetime expires (3 seconds)
+Detects collision with enemies using trigger (OnTriggerEnter2D)
+Calls enemy TakeDamage function
+Destroys itself after hitting enemy
+
+Enemy.cs
+
+Simple AI: chases player using Transform position
+Finds player by tag in Start()
+Calculates direction to player every FixedUpdate
+Health system (takes multiple hits)
+Awards score when destroyed
+Deals damage to player on contact
+
+EnemySpawner.cs
+
+Timer-based spawning system
+Spawns enemies in circular pattern around center
+Uses Random.insideUnitCircle for random spawn positions
+Instantiates enemies from prefab
+
+GameManager.cs
+
+Singleton pattern for global access
+Tracks and displays score
+Updates UI (score and health text)
+Finds player by tag to read health
+Handles game over state (freezes game with Time.timeScale)
+Displays game over text with final score
+Handles restart with R key using New Input System (Keyboard.current)
+
+How to Run
+
+Open the project in Unity Hub
+Load the main scene (SampleScene or Main)
+Press Play button in Unity Editor
+Move with WASD keys
+Aim with mouse, shoot with Left Mouse Button
+Avoid enemies, destroy them for points
+Press R to restart after game over
